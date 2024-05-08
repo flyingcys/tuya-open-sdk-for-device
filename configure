@@ -50,11 +50,12 @@ BOARDS_DIR=$ROOT_DIR/board
 BOARD_YAML=$BOARDS_DIR/board_config.yaml
 BOARD_NAMES=$(cat $BOARD_YAML | grep -oP '(?<=^- name: ).*(?=$)')
 BOARD_NAME=$(echo "$BOARD_NAMES" | bash $LISTMENU "Boards" 20 60 13)
-BOARD_INFO=$(cat $BOARD_YAML | grep -A 3 "^- name: $BOARD_NAME\s*$")
+BOARD_INFO=$(cat $BOARD_YAML | grep -A 4 "^- name: $BOARD_NAME\s*$")
 BOARD_LOCATER=$(echo "$BOARD_INFO" | grep -oP '(?<=locater: ).*(?=$)')
 BOARD_PATH="${BOARDS_DIR}/${BOARD_LOCATER}"
 BOARD_REPO=$(echo "$BOARD_INFO" | grep -oP '(?<=repo: ).*(?=$)')
 BOARD_COMMIT=$(echo "$BOARD_INFO" | grep -oP '(?<=commit: ).*(?=$)')
+BOARD_CHIP=$(echo "$BOARD_INFO" | grep -oP '(?<=chip: ).*(?=$)')
 assert_non_null "$BOARD_NAME" "Can't find the [board name]."
 assert_non_null "$BOARD_LOCATER" "Can't find the [board locater]."
 assert_non_null "$BOARD_REPO" "Can't find the [board repo]."
@@ -66,6 +67,20 @@ commit: $BOARD_COMMIT" # end BOARD_STR
 show "" "$BOARD_STR"
 show "${fore[write]};${back[green]}" "[DONE] Choice board: $BOARD_NAME"
 show "" ""
+
+
+if [ -n "$BOARD_CHIP" ]; then
+	show "" "Choice chip ..."
+	CHIP_NAME=$(IFS=', ' read -r -a CHIP_ARRAY <<< "$BOARD_CHIP" && \
+		for chip in "${CHIP_ARRAY[@]}"; do echo "$chip"; done | \
+		bash $LISTMENU "Chips" 20 60 13
+	)
+	assert_non_null "$CHIP_NAME" "Have no [chip]."
+	show "${fore[write]};${back[green]}" "[DONE] Choice chip: $CHIP_NAME"
+	show "" ""
+else
+	CHIP_NAME="undefine"
+fi
 
 ########################################
 # Choice Pre-config
@@ -101,6 +116,7 @@ set(DEFAULT_CONFIG_NAME \"${DEFAULT_CONFIG_NAME}\")
 set(PRE_CONFIG_NAME \"${PRE_CONFIG_NAME}\")
 set(PRE_CONFIG_DIR \"${PRE_CONFIG_DIR}\")
 set(KCONFIG_CATALOG \"${KCONFIG_CATALOG}\")
+set(CHIP_NAME \"${CHIP_NAME}\")
 " # end FILE_INFO
 echo "$FILE_INFO" > $CONFIG_CMAKE
 show "${fore[write]};${back[green]}" "[DONE] Genreate cmake file: $CONFIG_CMAKE"
@@ -134,7 +150,7 @@ fi
 if [ -f "$BOARD_PATH/board_prepare.sh" ]; then
 	show "" "Run [$BOARD_PATH/board_prepare.sh]."
 	cd "$BOARD_PATH"
-	sh "board_prepare.sh"
+	sh "board_prepare.sh" $CHIP_NAME
 fi
 if [ ! -f "$BOARD_PATH/$DEFAULT_CONFIG_NAME" ]; then
 	show "${fore[yellow]}" "Warning: not found [$BOARD_PATH/$DEFAULT_CONFIG_NAME]."

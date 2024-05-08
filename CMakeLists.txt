@@ -141,7 +141,7 @@ add_custom_command(
     COMMAND
     ./build_example.sh "${EXAMPLE_NAME}" "${EXAMPLE_VER}" "${BOARD_NEED_HDIR}"
     "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}" "${BOARD_NEED_LIBS}"
-    "${EXECUTABLE_OUTPUT_PATH}" "build"
+    "${EXECUTABLE_OUTPUT_PATH}" "build" "${CHIP_NAME}"
 
     COMMENT
     "[EXAMPLE] Generate execute file [${EXAMPLE_NAME}]"
@@ -156,6 +156,19 @@ add_custom_target(board_clean
     ./build_example.sh "${EXAMPLE_NAME}" "${EXAMPLE_VER}" "${BOARD_NEED_HDIR}"
     "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}" "${BOARD_NEED_LIBS}"
     "${EXECUTABLE_OUTPUT_PATH}" "clean"
+
+    COMMENT
+    "[TOP] Board clean."
+    )
+
+add_custom_target(board_menuconfig
+    WORKING_DIRECTORY
+    ${BOARD_PATH}
+
+    COMMAND
+    ./build_example.sh "${EXAMPLE_NAME}" "${EXAMPLE_VER}" "${BOARD_NEED_HDIR}"
+    "${CMAKE_ARCHIVE_OUTPUT_DIRECTORY}" "${BOARD_NEED_LIBS}"
+    "${EXECUTABLE_OUTPUT_PATH}" "menuconfig"
 
     COMMENT
     "[TOP] Board clean."
