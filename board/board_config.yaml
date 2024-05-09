@@ -15,4 +15,4 @@ boards:
 - name: pico-w
   locater: pico-w
   repo: https://github.com/tuya/tuya-open-sdk-for-device-board
-  commit: pico-w
+  commit: board_pico-w
