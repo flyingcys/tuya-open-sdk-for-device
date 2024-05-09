@@ -12,3 +12,7 @@ boards:
   repo: https://github.com/flyingcys/tuya-open-sdk-for-device-board
   commit: board_esp32
   chip: esp32 esp32s2 esp32s3 espp32c2 esp32c3 esp32c6
+- name: pico-w
+  locater: pico-w
+  repo: https://github.com/tuya/tuya-open-sdk-for-device-board
+  commit: pico-w
